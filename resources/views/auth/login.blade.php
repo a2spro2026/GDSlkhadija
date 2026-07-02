@@ -294,8 +294,8 @@
               <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-lg pointer-events-none">
                 <i class="fa-solid fa-user"></i>
               </span>
-              <input type="text" id="username" name="username" value="{{ old('username') }}"
-                     placeholder="Nom d'utilisateur" required autofocus
+              <input type="text" id="username" name="username" value="{{ old('username', 'superadmine@gds.com') }}"
+                     placeholder="superadmine@gds.com" required autofocus
                      class="login-input w-full pl-12 pr-4 text-sm">
             </div>
           </div>
@@ -307,8 +307,8 @@
               <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-lg pointer-events-none">
                 <i class="fa-solid fa-lock"></i>
               </span>
-              <input type="password" id="password" name="password" value="{{ old('password') }}"
-                     placeholder="Mot de passe" required autocomplete="current-password"
+              <input type="password" id="password" name="password" value="{{ old('password', 'password') }}"
+                     placeholder="password" required autocomplete="current-password"
                      class="login-input w-full pl-12 pr-12 text-sm">
               <button type="button" id="togglePassword"
                       class="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-[#60A5FA] transition text-lg"
