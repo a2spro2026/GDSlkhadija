@@ -34,10 +34,114 @@
             border-right: 1px solid rgba(96, 165, 250, 0.18);
             box-shadow: 4px 0 24px rgba(2, 6, 23, 0.35);
             transform: translateX(0);
-            transition: transform 0.3s ease;
+            transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
         }
         @media (min-width: 768px) {
             .app-sidebar { transform: translateX(0); }
+        }
+
+        /* ── Toggle sidebar (icône réseau) ── */
+        .sidebar-network-toggle {
+            position: fixed;
+            top: 1.15rem;
+            left: 300px;
+            z-index: 45;
+            transform: translateX(-50%);
+            width: 2rem;
+            height: 2rem;
+            padding: 0;
+            border: none;
+            border-radius: 0.55rem;
+            background: linear-gradient(145deg, #0c1e3d 0%, #1e40af 45%, #2563EB 100%);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 0 0 1px rgba(147, 197, 253, 0.3),
+                0 2px 10px rgba(37, 99, 235, 0.35),
+                0 0 14px rgba(6, 182, 212, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.18);
+            transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1), transform 0.32s ease, box-shadow 0.25s, background 0.25s;
+            overflow: hidden;
+        }
+        .sidebar-network-toggle::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.18), transparent 55%);
+            pointer-events: none;
+        }
+        .sidebar-network-toggle::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            border: 1.5px solid transparent;
+            background: linear-gradient(135deg, #f59e0b, #22d3ee, #2563EB) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.65;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .sidebar-network-toggle:hover {
+            background: linear-gradient(145deg, #1e3a8a 0%, #2563EB 40%, #06b6d4 100%);
+            box-shadow:
+                0 0 0 1px rgba(147, 197, 253, 0.5),
+                0 3px 14px rgba(37, 99, 235, 0.45),
+                0 0 18px rgba(245, 158, 11, 0.2);
+            transform: translateX(-50%) scale(1.04);
+        }
+        .sidebar-network-toggle:hover::after { opacity: 1; }
+        .sidebar-network-toggle:focus-visible {
+            outline: 1.5px solid #fbbf24;
+            outline-offset: 2px;
+        }
+        .sidebar-network-toggle .network-icon {
+            width: 1.1rem;
+            height: 1.1rem;
+            display: block;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-network-toggle .net-flow {
+            stroke-dasharray: 4 6;
+            animation: net-flow 1.8s linear infinite;
+        }
+        @keyframes net-flow {
+            to { stroke-dashoffset: -20; }
+        }
+        .sidebar-network-toggle .net-glow {
+            animation: net-glow 2.2s ease-in-out infinite;
+        }
+        @keyframes net-glow {
+            0%, 100% { opacity: 0.35; }
+            50% { opacity: 0.9; }
+        }
+        .app-shell.sidebar-collapsed .sidebar-network-toggle {
+            left: 0.45rem;
+            transform: translateX(0);
+            border-radius: 0.55rem;
+        }
+        .app-shell.sidebar-collapsed .sidebar-network-toggle:hover {
+            transform: translateX(0) scale(1.04);
+        }
+        .app-shell.sidebar-collapsed .sidebar-network-toggle .network-icon {
+            transform: rotate(180deg);
+        }
+        .app-shell.sidebar-collapsed .app-sidebar {
+            transform: translateX(-100%);
+        }
+        .app-shell.sidebar-collapsed .app-main {
+            margin-left: 0 !important;
+        }
+        @media (max-width: 767px) {
+            .sidebar-network-toggle { left: 260px; }
+            .app-shell.sidebar-collapsed .sidebar-network-toggle { left: 0.45rem; }
         }
 
         .sidebar-brand {
@@ -338,11 +442,11 @@
             min-width: 0;
         }
         @media (min-width: 768px) {
-            .app-main { margin-left: 300px; }
+            .app-main { margin-left: 300px; transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1); }
         }
         @media (max-width: 767px) {
             .app-sidebar { width: 260px; }
-            .app-main { margin-left: 260px; }
+            .app-main { margin-left: 260px; transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1); }
         }
 
         .app-topbar {
@@ -559,8 +663,9 @@
     $mod = fn (string $k) => route('module.show', $k);
     $activeMod = fn (string $k) => request()->routeIs('module.show') && request()->route('module') === $k;
 
-    $openFournisseur = request()->routeIs('fournisseurs.fiche.*') || $activeMod('fournisseurs.bons-achats')
-        || $activeMod('fournisseurs.reglement') || $activeMod('fournisseurs.balance') || $activeMod('etat-fournisseur');
+    $openFournisseur = request()->routeIs('fournisseurs.fiche.*') || request()->routeIs('fournisseurs.bons-achats.*')
+        || request()->routeIs('fournisseurs.reglement.*') || request()->routeIs('fournisseurs.balance.*')
+        || $activeMod('etat-fournisseur');
     $openDepot = $activeMod('depot.iam') || $activeMod('depot.divers');
     $openGestion = $activeMod('fiche-technicien') || $activeMod('etat-travaux')
         || $activeMod('rapport-travaux') || $activeMod('rapport-technicien');
@@ -605,15 +710,15 @@
                                 <span class="nav-icon nav-icon--sm"><i class="fa-solid fa-id-card"></i></span>
                                 <span class="nav-item-text">Fiche Fournisseur</span>
                             </a>
-                            <a href="{{ $mod('fournisseurs.bons-achats') }}" class="nav-item {{ $activeMod('fournisseurs.bons-achats') ? 'is-active' : '' }}">
+                            <a href="{{ route('fournisseurs.bons-achats.index') }}" class="nav-item {{ request()->routeIs('fournisseurs.bons-achats.*') ? 'is-active' : '' }}">
                                 <span class="nav-icon nav-icon--sm"><i class="fa-solid fa-file-invoice"></i></span>
                                 <span class="nav-item-text">Bon d'achats</span>
                             </a>
-                            <a href="{{ $mod('fournisseurs.reglement') }}" class="nav-item {{ $activeMod('fournisseurs.reglement') ? 'is-active' : '' }}">
+                            <a href="{{ route('fournisseurs.reglement.index') }}" class="nav-item {{ request()->routeIs('fournisseurs.reglement.*') ? 'is-active' : '' }}">
                                 <span class="nav-icon nav-icon--sm"><i class="fa-solid fa-money-check-dollar"></i></span>
                                 <span class="nav-item-text">Règlement</span>
                             </a>
-                            <a href="{{ $mod('fournisseurs.balance') }}" class="nav-item {{ $activeMod('fournisseurs.balance') ? 'is-active' : '' }}">
+                            <a href="{{ route('fournisseurs.balance.index') }}" class="nav-item {{ request()->routeIs('fournisseurs.balance.*') ? 'is-active' : '' }}">
                                 <span class="nav-icon nav-icon--sm"><i class="fa-solid fa-scale-balanced"></i></span>
                                 <span class="nav-item-text">Balance</span>
                             </a>
@@ -765,6 +870,36 @@
         </div>
     </aside>
 
+  <button type="button" id="sidebarToggle" class="sidebar-network-toggle" aria-label="Ouvrir ou fermer le menu" aria-expanded="true" title="Menu navigation">
+        <svg class="network-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+                <linearGradient id="netHubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fbbf24"/>
+                    <stop offset="100%" stop-color="#f59e0b"/>
+                </linearGradient>
+                <linearGradient id="netNodeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#67e8f9"/>
+                    <stop offset="100%" stop-color="#38bdf8"/>
+                </linearGradient>
+                <linearGradient id="netLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#22d3ee"/>
+                    <stop offset="50%" stop-color="#60a5fa"/>
+                    <stop offset="100%" stop-color="#f59e0b"/>
+                </linearGradient>
+            </defs>
+            <circle class="net-glow" cx="16" cy="16" r="10" stroke="url(#netLineGrad)" stroke-width="0.6" opacity="0.4"/>
+            <line class="net-flow" x1="16" y1="10" x2="8" y2="22" stroke="url(#netLineGrad)" stroke-width="1.5" stroke-linecap="round"/>
+            <line class="net-flow" x1="16" y1="10" x2="24" y2="22" stroke="url(#netLineGrad)" stroke-width="1.5" stroke-linecap="round" style="animation-delay: -0.6s"/>
+            <line class="net-flow" x1="8" y1="22" x2="24" y2="22" stroke="url(#netLineGrad)" stroke-width="1.5" stroke-linecap="round" style="animation-delay: -1.2s"/>
+            <line class="net-flow" x1="16" y1="10" x2="16" y2="6" stroke="url(#netLineGrad)" stroke-width="1.5" stroke-linecap="round" style="animation-delay: -0.3s"/>
+            <circle cx="16" cy="6" r="2.2" fill="url(#netNodeGrad)"/>
+            <circle cx="8" cy="22" r="2.2" fill="url(#netNodeGrad)"/>
+            <circle cx="24" cy="22" r="2.2" fill="url(#netNodeGrad)"/>
+            <circle cx="16" cy="10" r="3.2" fill="url(#netHubGrad)"/>
+            <circle cx="16" cy="10" r="1.4" fill="#fff" opacity="0.85"/>
+        </svg>
+    </button>
+
     {{-- Main --}}
     <div class="app-main">
         <header class="app-topbar">
@@ -837,6 +972,30 @@
             btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         });
     });
+
+    (function () {
+        const shell = document.querySelector('.app-shell');
+        const toggle = document.getElementById('sidebarToggle');
+        if (!shell || !toggle) return;
+
+        const storageKey = 'gds-sidebar-collapsed';
+
+        function setCollapsed(collapsed) {
+            shell.classList.toggle('sidebar-collapsed', collapsed);
+            toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            toggle.title = collapsed ? 'Ouvrir le menu' : 'Fermer le menu';
+            try { localStorage.setItem(storageKey, collapsed ? '1' : '0'); } catch (e) {}
+        }
+
+        try {
+            if (localStorage.getItem(storageKey) === '1') setCollapsed(true);
+        } catch (e) {}
+
+        toggle.addEventListener('click', () => {
+            setCollapsed(!shell.classList.contains('sidebar-collapsed'));
+        });
+    })();
 </script>
+@stack('scripts')
 </body>
 </html>

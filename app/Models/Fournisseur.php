@@ -13,4 +13,21 @@ class Fournisseur extends Model
         'contact',
         'email',
     ];
+
+    public function bonsAchats()
+    {
+        return $this->hasMany(BonAchat::class);
+    }
+
+    public function reglements()
+    {
+        return $this->hasMany(Reglement::class);
+    }
+
+    public function soldeTotal(): float
+    {
+        return (float) $this->bonsAchats()
+            ->get()
+            ->sum(fn (BonAchat $bon) => $bon->solde());
+    }
 }
