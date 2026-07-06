@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BonAchat;
 use App\Models\Fournisseur;
+use App\Services\DepotIamService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -39,6 +40,8 @@ class BonAchatController extends Controller
             ]), $validated['lignes']);
         });
 
+        DepotIamService::syncFromBonAchats();
+
         return redirect()->route('fournisseurs.bons-achats.index');
     }
 
@@ -56,12 +59,16 @@ class BonAchatController extends Controller
             $this->persistBon($bonAchat, $validated['lignes']);
         });
 
+        DepotIamService::syncFromBonAchats();
+
         return redirect()->route('fournisseurs.bons-achats.index');
     }
 
     public function destroy(BonAchat $bonAchat)
     {
         $bonAchat->delete();
+
+        DepotIamService::syncFromBonAchats();
 
         return redirect()->route('fournisseurs.bons-achats.index');
     }
@@ -92,6 +99,8 @@ class BonAchatController extends Controller
             'lignes' => 'required|array|min:1',
             'lignes.*.reference' => 'nullable|string|max:100',
             'lignes.*.designation' => 'required|string|max:255',
+            'lignes.*.mesure' => 'nullable|string|max:50',
+            'lignes.*.stock_initial' => 'nullable|numeric|min:0',
             'lignes.*.quantite' => 'required|numeric|min:0.01',
             'lignes.*.prix_unitaire' => 'required|numeric|min:0',
             'lignes.*.sous_total' => 'required|numeric|min:0',
@@ -112,6 +121,8 @@ class BonAchatController extends Controller
             $bon->lignes()->create([
                 'reference' => $ligne['reference'] ?? null,
                 'designation' => $ligne['designation'],
+                'mesure' => $ligne['mesure'] ?? null,
+                'stock_initial' => $ligne['stock_initial'] ?? 0,
                 'quantite' => $ligne['quantite'],
                 'prix_unitaire' => $ligne['prix_unitaire'],
                 'sous_total' => $ligne['sous_total'],

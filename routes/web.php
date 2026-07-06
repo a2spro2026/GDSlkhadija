@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\BonAchatController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepotIamController;
 use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ProductController;
@@ -58,6 +59,15 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('fournisseurs')->name('fournisseurs.balance.')->group(function () {
         Route::get('balance', [BalanceController::class, 'index'])->name('index');
+    });
+
+    Route::prefix('depot')->name('depot.iam.')->group(function () {
+        Route::get('iam', [DepotIamController::class, 'index'])->name('index');
+        Route::get('iam/{article}/voir', [DepotIamController::class, 'show'])->name('show');
+        Route::get('iam/{article}/corriger', [DepotIamController::class, 'edit'])->name('edit');
+        Route::put('iam/{article}', [DepotIamController::class, 'update'])->name('update');
+        Route::get('iam/{article}/print', [DepotIamController::class, 'print'])->name('print');
+        Route::get('iam/{article}/export-pdf', [DepotIamController::class, 'exportPdf'])->name('export-pdf');
     });
 
     Route::middleware('role:admin,manager')->group(function () {

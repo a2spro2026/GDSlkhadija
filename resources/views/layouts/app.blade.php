@@ -666,7 +666,7 @@
     $openFournisseur = request()->routeIs('fournisseurs.fiche.*') || request()->routeIs('fournisseurs.bons-achats.*')
         || request()->routeIs('fournisseurs.reglement.*') || request()->routeIs('fournisseurs.balance.*')
         || $activeMod('etat-fournisseur');
-    $openDepot = $activeMod('depot.iam') || $activeMod('depot.divers');
+    $openDepot = request()->routeIs('depot.iam.*') || $activeMod('depot.divers');
     $openGestion = $activeMod('fiche-technicien') || $activeMod('etat-travaux')
         || $activeMod('rapport-travaux') || $activeMod('rapport-technicien');
     $openSysteme = $activeMod('configuration') || request()->routeIs('systeme.utilisateurs.*');
@@ -742,7 +742,7 @@
                 <div class="nav-group-body">
                     <div class="nav-group-inner">
                         <div class="nav-subgroup">
-                            <a href="{{ $mod('depot.iam') }}" class="nav-item {{ $activeMod('depot.iam') ? 'is-active' : '' }}">
+                            <a href="{{ route('depot.iam.index') }}" class="nav-item {{ request()->routeIs('depot.iam.*') ? 'is-active' : '' }}">
                                 <span class="nav-icon nav-icon--sm"><i class="fa-solid fa-server"></i></span>
                                 <span class="nav-item-text">Dépôt IAM</span>
                             </a>

@@ -37,6 +37,8 @@
             <tr>
                 <th>Réf</th>
                 <th>Désignation</th>
+                <th>Stock Init.</th>
+                <th>Mesur</th>
                 <th>Qté</th>
                 <th>Prix U</th>
                 <th>Sous-total</th>
@@ -47,6 +49,8 @@
                 <tr>
                     <td>{{ $l->reference ?? '—' }}</td>
                     <td><strong>{{ $l->designation }}</strong></td>
+                    <td>{{ number_format($l->stock_initial ?? 0, 2, ',', ' ') }}</td>
+                    <td>{{ $l->mesure ?? '—' }}</td>
                     <td>{{ number_format($l->quantite, 2, ',', ' ') }}</td>
                     <td>{{ number_format($l->prix_unitaire, 2, ',', ' ') }} DH</td>
                     <td>{{ number_format($l->sous_total, 2, ',', ' ') }} DH</td>

@@ -11,6 +11,8 @@ class BonAchatLigne extends Model
         'bon_achat_id',
         'reference',
         'designation',
+        'mesure',
+        'stock_initial',
         'quantite',
         'prix_unitaire',
         'sous_total',
@@ -19,6 +21,7 @@ class BonAchatLigne extends Model
     protected function casts(): array
     {
         return [
+            'stock_initial' => 'decimal:2',
             'quantite' => 'decimal:2',
             'prix_unitaire' => 'decimal:2',
             'sous_total' => 'decimal:2',

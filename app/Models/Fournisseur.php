@@ -30,4 +30,18 @@ class Fournisseur extends Model
             ->get()
             ->sum(fn (BonAchat $bon) => $bon->solde());
     }
+
+    public function isIam(): bool
+    {
+        return str_contains(mb_strtoupper($this->raison_sociale ?? ''), 'IAM');
+    }
+
+    public static function iamIds(): array
+    {
+        return static::query()
+            ->get()
+            ->filter(fn (self $f) => $f->isIam())
+            ->pluck('id')
+            ->all();
+    }
 }
